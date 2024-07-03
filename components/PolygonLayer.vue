@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { Map } from "maplibre-gl";
+
 const props = defineProps({
 	map: {
-		type: Object,
+		type: Map,
+	},
+	show: {
+		type: Boolean,
 		required: true,
 	},
 });
 
-props.map.on("load", () => {
-	props.map.addLayer({
+const addPolygonLayer = () => {
+	props.map?.addLayer({
 		id: "polygon",
 		type: "fill",
 		source: "test-data",
@@ -19,7 +24,7 @@ props.map.on("load", () => {
 		filter: ["==", "$type", "Polygon"],
 	});
 
-	props.map.addLayer({
+	props.map?.addLayer({
 		id: "polygon-line",
 		type: "line",
 		source: "test-data",
@@ -30,7 +35,43 @@ props.map.on("load", () => {
 		},
 		filter: ["==", "$type", "Polygon"],
 	});
-});
+};
+
+const addPolygonLayerOnLoad = () => {
+	props.map?.on("load", () => {
+		addPolygonLayer();
+	});
+};
+
+watch(
+	() => props.map,
+	(newVal) => {
+		if (
+			newVal &&
+			!newVal.getLayer("polygon") &&
+			!newVal.getLayer("polygon-line")
+		) {
+			addPolygonLayerOnLoad();
+		}
+	}
+);
+
+watch(
+	() => props.show,
+	(newVal) => {
+		if (
+			newVal &&
+			props.map &&
+			!props.map?.getLayer("polygon") &&
+			!props.map?.getLayer("polygon-line")
+		) {
+			addPolygonLayer();
+		} else {
+			props.map?.removeLayer("polygon");
+			props.map?.removeLayer("polygon-line");
+		}
+	}
+);
 </script>
 
 <template>

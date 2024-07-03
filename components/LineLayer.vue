@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import { watch, onMounted } from "vue";
+import { Map } from "maplibre-gl";
 
 const props = defineProps({
 	map: {
-		type: Object,
+		type: Map,
+	},
+	show: {
+		type: Boolean,
 		required: true,
 	},
 });
 
-console.log(props.map);
-
 const addLineLayer = () => {
-	if (!props.map.getLayer("line-layer")) {
-		return;
-	}
-};
-
-props.map.on("load", () => {
-	props.map.addLayer({
+	props.map?.addLayer({
 		id: "line-layer",
 		type: "line",
 		source: "test-data",
@@ -28,7 +23,32 @@ props.map.on("load", () => {
 		},
 		filter: ["==", "$type", "LineString"],
 	});
-});
+};
+const addLineLayerOnLoad = () => {
+	props.map?.on("load", () => {
+		addLineLayer();
+	});
+};
+
+watch(
+	() => props.map,
+	(newVal) => {
+		if (newVal && !newVal.getLayer("line-layer")) {
+			addLineLayerOnLoad();
+		}
+	}
+);
+
+watch(
+	() => props.show,
+	(newVal) => {
+		if (newVal && props.map && !props.map?.getLayer("line-player")) {
+			addLineLayer();
+		} else {
+			props.map?.removeLayer("line-layer");
+		}
+	}
+);
 </script>
 
 <template>

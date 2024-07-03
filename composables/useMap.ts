@@ -5,32 +5,27 @@ export default function () {
 	const mapInstance = ref();
 	const mapGeoData = ref();
 
-	const getMapInstance = computed(() => mapInstance.value);
-
-	function setMapInstance(map: maplibregl.Map) {
-		mapInstance.value = map;
-	}
-	function setLineLayer(map: maplibregl.Map) {
-		map.on("load", () => {
-			map.addLayer({
-				id: "line-layer",
-				type: "line",
-				source: "test-data",
-				layout: {},
-				paint: {
-					"line-color": "yellow",
-					"line-width": 2,
-				},
-				filter: ["==", "$type", "LineString"],
-			});
+	function addLineLayer(map: maplibregl.Map) {
+		map.addLayer({
+			id: "line-layer",
+			type: "line",
+			source: "test-data",
+			layout: {},
+			paint: {
+				"line-color": "yellow",
+				"line-width": 2,
+			},
+			filter: ["==", "$type", "LineString"],
 		});
+	}
+	function removeLayer(map: maplibregl.Map, id: string) {
+		map.removeLayer(id);
 	}
 
 	return {
 		mapInstance,
 		mapGeoData,
-		getMapInstance,
-		setMapInstance,
-		setLineLayer,
+		addLineLayer,
+		removeLayer,
 	};
 }

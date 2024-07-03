@@ -2,5 +2,4 @@
 export default defineNuxtConfig({
 	css: ["maplibre-gl/dist/maplibre-gl.css"],
 	devtools: { enabled: true },
-	modules: ["@pinia/nuxt"],
 });
