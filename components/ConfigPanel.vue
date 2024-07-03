@@ -1,35 +1,12 @@
 <script setup lang="ts">
 const props = defineProps({
-	lineLayerDisabled: {
-		type: Boolean,
-		default: false,
-	},
-	circleLayerDisabled: {
-		type: Boolean,
-		default: false,
-	},
-	polygonLayerDisabled: {
-		type: Boolean,
-		default: false,
-	},
-	customLayerDisabled: {
-		type: Boolean,
-		default: false,
-	},
-	defaultLayerDisabled: {
+	disableLayer: {
 		type: Boolean,
 		default: false,
 	},
 });
 
-const emit = defineEmits([
-	"onToggleLineLayer",
-	"onToggleCircleLayer",
-	"onTogglePolygonLayer",
-	"onToggleCustomLayer",
-	"onToggleDefaultLayer",
-	"onToggleRasterMap",
-]);
+const emit = defineEmits(["onToggle"]);
 
 const toggleLineLayer = ref(true);
 const toggleCircleLayer = ref(true);
@@ -40,13 +17,8 @@ const toggleRasterMap = ref(false);
 
 type Layers = {
 	label: string;
-	emit:
-		| "onToggleLineLayer"
-		| "onToggleCircleLayer"
-		| "onTogglePolygonLayer"
-		| "onToggleCustomLayer"
-		| "onToggleDefaultLayer"
-		| "onToggleRasterMap";
+	emit: "onToggle";
+	emitValue: string;
 	disabled: boolean;
 	model: boolean;
 };
@@ -55,37 +27,43 @@ const layers = computed((): Layers[] => {
 	return [
 		{
 			label: "Line layer",
-			emit: "onToggleLineLayer",
-			disabled: props.lineLayerDisabled,
+			emit: "onToggle",
+			emitValue: "line",
+			disabled: props.disableLayer,
 			model: toggleLineLayer.value,
 		},
-    {
-      label: "Polygon layer",
-      emit: "onTogglePolygonLayer",
-      disabled: props.polygonLayerDisabled,
-      model: togglePolygonLayer.value,
-    },
+		{
+			label: "Polygon layer",
+			emit: "onToggle",
+			emitValue: "polygon",
+			disabled: props.disableLayer,
+			model: togglePolygonLayer.value,
+		},
 		{
 			label: "Circle layer",
-			emit: "onToggleCircleLayer",
-			disabled: props.circleLayerDisabled,
+			emit: "onToggle",
+			emitValue: "circle",
+			disabled: props.disableLayer,
 			model: toggleCircleLayer.value,
 		},
 		{
 			label: "Custom layer",
-			emit: "onToggleCustomLayer",
-			disabled: props.customLayerDisabled,
+			emit: "onToggle",
+			emitValue: "custom-marker",
+			disabled: props.disableLayer,
 			model: toggleCustomLayer.value,
 		},
 		{
 			label: "Default layer",
-			emit: "onToggleDefaultLayer",
-			disabled: props.defaultLayerDisabled,
+			emit: "onToggle",
+			emitValue: "default-marker",
+			disabled: props.disableLayer,
 			model: toggleDefaultLayer.value,
 		},
 		{
 			label: "Vector Tile",
-			emit: "onToggleRasterMap",
+			emit: "onToggle",
+			emitValue: "map",
 			disabled: false,
 			model: toggleRasterMap.value,
 		},
@@ -103,7 +81,7 @@ const layers = computed((): Layers[] => {
 						type="checkbox"
 						v-model="layer.model"
 						:disabled="layer.disabled"
-						@change="emit(layer.emit)"
+						@change="emit(layer.emit, layer.emitValue)"
 					/>
 					<span class="slider round"></span>
 				</label>
@@ -126,9 +104,9 @@ const layers = computed((): Layers[] => {
 }
 
 .wmg-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 	border-radius: 8px;
 	width: 320px;
 	padding: 16px;
@@ -138,7 +116,7 @@ const layers = computed((): Layers[] => {
 }
 
 .wmg-card__title {
-  margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 
 .config-item {
@@ -189,8 +167,8 @@ input:checked + .slider {
 }
 
 input:disabled + .slider {
-  cursor: not-allowed;
-  opacity: 0.3;
+	cursor: not-allowed;
+	opacity: 0.3;
 }
 
 input:focus + .slider {

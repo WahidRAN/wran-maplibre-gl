@@ -6,34 +6,39 @@ const handleMapLoad = (map: maplibregl.Map) => {
 
 const showDefaultMap = ref(true);
 const showRasterMap = ref(false);
-const toggleDefaultMap = () => {
-	showDefaultMap.value = !showDefaultMap.value;
-	showRasterMap.value = !showRasterMap.value;
-};
-
 const showLineLayer = ref(true);
-const toggleLineLayer = () => {
-	showLineLayer.value = !showLineLayer.value;
-};
-
 const showCircleLayer = ref(true);
-const toggleCircleLayer = () => {
-	showCircleLayer.value = !showCircleLayer.value;
-};
-
 const showPolygonLayer = ref(true);
-const togglePolygonLayer = () => {
-	showPolygonLayer.value = !showPolygonLayer.value;
-};
-
 const showCustomLayer = ref(true);
-const toggleCustomLayer = () => {
-	showCustomLayer.value = !showCustomLayer.value;
-};
-
 const showDefaultLayer = ref(true);
-const toggleDefaultLayer = () => {
-	showDefaultLayer.value = !showDefaultLayer.value;
+
+const toggleLayer = (layer: string) => {
+	switch (layer) {
+		case "line":
+			showLineLayer.value = !showLineLayer.value;
+			break;
+
+		case "polygon":
+			showPolygonLayer.value = !showPolygonLayer.value;
+			break;
+
+		case "circle":
+			showCircleLayer.value = !showCircleLayer.value;
+			break;
+
+		case "custom-marker":
+			showCustomLayer.value = !showCustomLayer.value;
+			break;
+
+		case "default-marker":
+			showDefaultLayer.value = !showDefaultLayer.value;
+			break;
+
+		case "map":
+			showDefaultMap.value = !showDefaultMap.value;
+			showRasterMap.value = !showRasterMap.value;
+			break;
+	}
 };
 </script>
 
@@ -45,20 +50,9 @@ const toggleDefaultLayer = () => {
 		<CircleLayer :map="mapInstance" :show="showCircleLayer" />
 		<CustomMarkerLayer :map="mapInstance" :show="showCustomLayer" />
 		<DefaultMarkerLayer :map="mapInstance" :show="showDefaultLayer" />
-		<ConfigPanel
-			:line-layer-disabled="showRasterMap"
-			:circle-layer-disabled="showRasterMap"
-			:polygon-layer-disabled="showRasterMap"
-			:custom-layer-disabled="showRasterMap"
-			:default-layer-disabled="showRasterMap"
-			@on-toggle-line-layer="toggleLineLayer"
-			@on-toggle-circle-layer="toggleCircleLayer"
-			@on-toggle-polygon-layer="togglePolygonLayer"
-			@on-toggle-custom-layer="toggleCustomLayer"
-			@on-toggle-default-layer="toggleDefaultLayer"
-			@on-toggle-raster-map="toggleDefaultMap"
-		/>
 		<VectorLayer :show="showRasterMap" />
+
+		<ConfigPanel :disable-layer="showRasterMap" @on-toggle="toggleLayer" />
 	</div>
 </template>
 
